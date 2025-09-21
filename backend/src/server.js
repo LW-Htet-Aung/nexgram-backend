@@ -1,9 +1,11 @@
 import { isSpoofedBot } from "@arcjet/inspect";
 import express from "express";
-import { aj } from "../libs/arcjet";
+import { aj } from "../libs/arcjet.js";
+import * as dotenv from "dotenv";
+dotenv.config();
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT;
 
 app.get("/", async (req, res) => {
   const decision = await aj.protect(req, { requested: 5 }); // Deduct 5 tokens from the bucket
