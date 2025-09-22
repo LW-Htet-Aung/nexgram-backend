@@ -3,11 +3,14 @@ import express from "express";
 import { aj } from "../libs/arcjet.js";
 import { ENV } from "./config/env.js";
 import { connectDB } from "./config/db.js";
+import cors from "cors";
 
 const app = express();
 const port = ENV.PORT;
 
-connectDB();
+// middleware
+app.use(cors());
+app.use(express.json());
 
 app.get("/", async (req, res) => {
   res.end(JSON.stringify({ message: "Hello World" }));
@@ -44,7 +47,15 @@ app.get("/", async (req, res) => {
   //   res.end(JSON.stringify({ message: "Hello World" }));
   // }
 });
-
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
-});
+const startServer = async () => {
+  try {
+    await connectDB();
+    app.listen(port, () => {
+      console.log(`Example app listening on port ${port}`);
+    });
+  } catch (error) {
+    console.log("Failed to start server:", error);
+    process.exit(1);
+  }
+};
+startServer();
