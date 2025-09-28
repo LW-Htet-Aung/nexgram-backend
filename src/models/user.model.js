@@ -1,4 +1,6 @@
 import mongoose from "mongoose";
+import bcrypt from "bcrypt";
+import { toIdPlugin } from "../config/mongoose.js";
 
 const userSchema = new mongoose.Schema(
   {
@@ -22,7 +24,10 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: true,
+      required: function () {
+        return !this.oauthProvider;
+      },
+      select: false,
     },
 
     profilePicture: {
@@ -60,9 +65,11 @@ const userSchema = new mongoose.Schema(
       type: String,
       unique: true,
       sparse: true,
+      default: null,
     },
     oauthProvider: {
       type: String,
+      default: null,
     },
     roles: {
       type: [String],
@@ -77,6 +84,20 @@ const userSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
+  try {
+    const saltRound = 10;
+    this.password = await bcrypt.hash(this.password, saltRound);
+    return next();
+  } catch (error) {
+    console.log("Failed to hash password:", error);
+    return next(error);
+  }
+});
+
+userSchema.plugin(toIdPlugin);
 
 const User = mongoose.model("User", userSchema);
 

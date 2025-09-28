@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { toIdPlugin } from "../config/mongoose.js";
 
 const commentSchema = new mongoose.Schema(
   {
@@ -17,17 +18,17 @@ const commentSchema = new mongoose.Schema(
       required: true,
       maxLength: 200,
     },
-    likes:[
+    likes: [
       {
         type: mongoose.Schema.ObjectId,
         ref: "User",
-      }
-    ]
+      },
+    ],
   },
   {
     timestamps: true,
   }
 );
-
+commentSchema.plugin(toIdPlugin);
 const Comment = mongoose.model("Comment", commentSchema);
 export default Comment;

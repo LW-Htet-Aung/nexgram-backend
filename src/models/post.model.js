@@ -1,4 +1,5 @@
 import mongoose, { mongo } from "mongoose";
+import { toIdPlugin } from "../config/mongoose.js";
 
 const postSchema = new mongoose.Schema(
   {
@@ -23,5 +24,5 @@ const postSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
-
+postSchema.plugin(toIdPlugin);
 const Post = mongoose.model("Post", postSchema);

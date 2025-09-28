@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { toIdPlugin } from "../config/mongoose.js";
 
 const notificationSchema = new mongoose.Schema(
   {
@@ -32,6 +33,7 @@ const notificationSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+notificationSchema.plugin(toIdPlugin);
 
 const Notification = mongoose.model("Notification", notificationSchema);
 
