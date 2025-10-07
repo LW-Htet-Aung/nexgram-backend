@@ -31,14 +31,27 @@ const userSchema = new mongoose.Schema(
     },
 
     profilePicture: {
-      type: String,
-      default:
-        "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg",
+      url: {
+        type: String,
+        default:
+          "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg",
+      },
+      fileId: {
+        type: String,
+        default: null,
+      },
     },
+
     bannerImage: {
-      type: String,
-      default:
-        "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg",
+      url: {
+        type: String,
+        default:
+          "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg",
+      },
+      fileId: {
+        type: String,
+        default: null,
+      },
     },
     bio: {
       type: String,

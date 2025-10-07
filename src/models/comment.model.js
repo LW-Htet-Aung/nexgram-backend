@@ -30,5 +30,7 @@ const commentSchema = new mongoose.Schema(
   }
 );
 commentSchema.plugin(toIdPlugin);
+
 const Comment = mongoose.model("Comment", commentSchema);
+
 export default Comment;
