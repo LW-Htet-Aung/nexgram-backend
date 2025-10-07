@@ -1,10 +1,10 @@
-import mongoose, { mongo } from "mongoose";
+import mongoose from "mongoose";
 import { toIdPlugin } from "../config/mongoose.js";
 
 const postSchema = new mongoose.Schema(
   {
     user: {
-      typeof: mongoose.Schema.ObjectId,
+      type: mongoose.Schema.ObjectId,
       ref: "User",
       required: true,
     },
@@ -14,8 +14,8 @@ const postSchema = new mongoose.Schema(
       maxLength: 200,
     },
     image: {
-      type: String,
-      default: "",
+      url: { type: String, default: "" },
+      fileId: { type: String, default: null },
     },
     likes: [{ type: mongoose.Schema.ObjectId, ref: "User" }],
     comments: [{ type: mongoose.Schema.ObjectId, ref: "Comment" }],
@@ -25,4 +25,7 @@ const postSchema = new mongoose.Schema(
   }
 );
 postSchema.plugin(toIdPlugin);
+
 const Post = mongoose.model("Post", postSchema);
+
+export default Post;

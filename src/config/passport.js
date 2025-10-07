@@ -16,6 +16,7 @@ passport.use(
     },
     async (email, password, cb) => {
       try {
+        console.log(email, password, "passport");
         const user = await User.findOne({
           email: email.toLowerCase(),
         }).select("+password");

@@ -70,7 +70,7 @@ export const followUser = asyncHandler(async (req, res) => {
     .status(200)
     .json({
       message: isFollowing
-        ? "User ufollowed successfully"
+        ? "User unfollowed successfully"
         : "User followed succesfully",
     });
 });

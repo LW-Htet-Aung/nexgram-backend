@@ -39,6 +39,7 @@ export const registerController = async (req, res) => {
 
 export const loginController = asyncHandler(async (req, res) => {
   const user = req.user;
+  console.log(user, "user");
   if (!user) return res.status(401).json({ message: "Unauthorized" });
   const token = signToken(user);
 
