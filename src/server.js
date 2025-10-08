@@ -5,9 +5,9 @@ import cors from "cors";
 import "./config/passport.js";
 import userRoutes from "./routes/user.route.js";
 import postRoutes from "./routes/post.route.js";
+import commentRoutes from "./routes/comment.route.js";
 import authRoutes from "./routes/auth.route.js";
 import passport from "passport";
-import imagekit from "./config/imagekit.js";
 
 const app = express();
 const port = ENV.PORT;
@@ -34,6 +34,7 @@ app.get("/", async (req, res) => {
 app.use("/", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/posts", postRoutes);
+app.use("/api/comments", commentRoutes);
 
 // error handling middleware
 app.use((err, req, res, next) => {
