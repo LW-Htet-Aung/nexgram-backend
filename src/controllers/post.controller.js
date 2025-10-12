@@ -129,7 +129,7 @@ export const likePost = asyncHandler(async (req, res) => {
       await Notification.create({
         from: user.id,
         to: post.user,
-        types: "like",
+        type: "like",
         post: postId,
       });
     }

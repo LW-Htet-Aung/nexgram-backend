@@ -8,11 +8,13 @@ import postRoutes from "./routes/post.route.js";
 import commentRoutes from "./routes/comment.route.js";
 import authRoutes from "./routes/auth.route.js";
 import passport from "passport";
+import { authLimiter, limit } from "./config/rate-limiter.js";
+// import { rateLimit } from "./config/rate-limit.js";
 
 const app = express();
 const port = ENV.PORT;
-
 // middleware
+app.use(limit);
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -20,18 +22,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use(passport.initialize());
 
 app.get("/", async (req, res) => {
-  res.end(
-    JSON.stringify({
-      message: imagekit.url({
-        src: "https://ik.imagekit.io/zjl5t48vc/nexgram/posts/Screenshot__3__3kJVCsuDk.png?tr=h-600,w-800,cm-pad_resize:q-auto:f-webp",
-        signed: true,
-        expireSeconds: 300,
-      }),
-    })
-  );
+  res.end("Hello world");
 });
 
-app.use("/", authRoutes);
+app.use("/", authLimiter, authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/comments", commentRoutes);
