@@ -13,7 +13,7 @@ router.get("/profile/:username", getUserProfile);
 
 // protected
 router.put("/profile", jwtAuthMiddleware, updateProfile);
-router.post("/me", jwtAuthMiddleware, getCurrentUser);
+router.get("/me", jwtAuthMiddleware, getCurrentUser);
 router.post("/follow/:targerUserId", jwtAuthMiddleware, followUser);
 
 export default router;

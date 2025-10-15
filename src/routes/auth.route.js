@@ -1,10 +1,6 @@
 import express from "express";
 import passport from "passport";
 import {
-  googleMiddleware,
-  localLoginMiddleware,
-} from "../middleware/auth.middleware.js";
-import {
   googleController,
   loginController,
   registerController,
@@ -31,6 +27,7 @@ router.post(
   passport.authenticate("local", { session: false }),
   loginController
 );
+
 router.post("/register", registerController);
 
 export default router;
