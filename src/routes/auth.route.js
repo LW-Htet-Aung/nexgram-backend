@@ -4,7 +4,7 @@ import {
   googleController,
   loginController,
   registerController,
-  googleMobileConroller,
+  googleMobileController,
 } from "../controllers/auth.controller.js";
 
 const router = express.Router();
@@ -23,7 +23,7 @@ router.get(
   googleController
 );
 
-router.post("/google/mobile", googleMobileConroller);
+router.post("/google/mobile", googleMobileController);
 
 router.post(
   "/login",

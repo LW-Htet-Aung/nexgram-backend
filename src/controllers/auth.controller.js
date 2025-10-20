@@ -54,7 +54,7 @@ export const googleController = asyncHandler((req, res) => {
   return res.status(200).json({ message: "Login successful", token, user });
 });
 
-export const googleMobileConroller = asyncHandler(async (req, res) => {
+export const googleMobileController = asyncHandler(async (req, res) => {
   const { code } = req.body;
 
   if (!code) return res.status(400).json({ message: "Missing code" });
@@ -65,7 +65,6 @@ export const googleMobileConroller = asyncHandler(async (req, res) => {
       },
       method: "POST",
       body: JSON.stringify({
-        // code,
         code,
         client_id: ENV.GOOGLE_CLIENT_ID,
         client_secret: ENV.GOOGLE_CLIENT_SECRET,
@@ -73,29 +72,34 @@ export const googleMobileConroller = asyncHandler(async (req, res) => {
         grant_type: "authorization_code",
       }),
     });
+
     const data = await response.json();
-    console.log(data, "data");
+
     if (!data?.id_token)
       return res.status(400).json({ message: "Missing data token" });
-    console.log(jwt.decode(data.id_token), "jwt");
+
     // const userInfoRes = await fetch(
     //   `https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=${data.id_token}`
     // );
     // const oauthUser = await userInfoRes.json();
     const oauthUser = jwt.decode(data.id_token);
+
     const user = await User.findOneAndUpdate(
       {
         email: oauthUser.email.toLowerCase(),
       },
       {
         $setOnInsert: {
-          firstName: oauthUser.given_name,
-          lastName: oauthUser.family_name,
-          email: oauthUser.email.toLowerCase(),
-          username: oauthUser.email.split("@")[0],
+          firstName: oauthUser?.given_name ?? "",
+          lastName: oauthUser?.family_name ?? "",
+          email: oauthUser?.email?.toLowerCase() ?? "",
+          username: oauthUser?.name ?? "",
           oauthProvider: "google",
-          oauthId: oauthUser.sub,
-          profilePicture: oauthUser.picture,
+          oauthId: oauthUser?.sub,
+          profilePicture: {
+            fileId: null,
+            url: oauthUser?.picture ?? "",
+          },
           roles: ["user"],
         },
       },
@@ -104,12 +108,12 @@ export const googleMobileConroller = asyncHandler(async (req, res) => {
         upsert: true,
       }
     );
-    if (!user) return res.status(401).json({ message: "Oauth Faield" });
+    if (!user) return res.status(404).json({ message: "User not found" });
 
     const token = signToken(user);
 
     return res.status(200).json({ message: "Login successful", token, user });
   } catch (error) {
-    return res.status(500).json({ message: "Oauth Faield" });
+    return res.status(500).json({ message: "Oauth Faield:" + error });
   }
 });
