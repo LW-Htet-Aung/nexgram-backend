@@ -4,6 +4,7 @@ import {
   googleController,
   loginController,
   registerController,
+  googleMobileConroller,
 } from "../controllers/auth.controller.js";
 
 const router = express.Router();
@@ -21,6 +22,8 @@ router.get(
   passport.authenticate("google", { session: false }),
   googleController
 );
+
+router.post("/google/mobile", googleMobileConroller);
 
 router.post(
   "/login",

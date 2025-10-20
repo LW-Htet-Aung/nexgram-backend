@@ -1,7 +1,8 @@
+import { ENV } from "../config/env.js";
 import { signToken } from "../config/passport.js";
 import User from "../models/user.model.js";
 import asyncHandler from "express-async-handler";
-
+import jwt from "jsonwebtoken";
 export const registerController = async (req, res) => {
   const { firstName, lastName, username, email, password, confirmPassword } =
     req.body;
@@ -51,4 +52,64 @@ export const googleController = asyncHandler((req, res) => {
   if (!user) return res.status(401).json({ message: "Oauth Faield" });
   const token = signToken(user);
   return res.status(200).json({ message: "Login successful", token, user });
+});
+
+export const googleMobileConroller = asyncHandler(async (req, res) => {
+  const { code } = req.body;
+
+  if (!code) return res.status(400).json({ message: "Missing code" });
+  try {
+    const response = await fetch(ENV.GOOGLE_OAUTH_URL, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      method: "POST",
+      body: JSON.stringify({
+        // code,
+        code,
+        client_id: ENV.GOOGLE_CLIENT_ID,
+        client_secret: ENV.GOOGLE_CLIENT_SECRET,
+        redirect_uri: "",
+        grant_type: "authorization_code",
+      }),
+    });
+    const data = await response.json();
+    console.log(data, "data");
+    if (!data?.id_token)
+      return res.status(400).json({ message: "Missing data token" });
+    console.log(jwt.decode(data.id_token), "jwt");
+    // const userInfoRes = await fetch(
+    //   `https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=${data.id_token}`
+    // );
+    // const oauthUser = await userInfoRes.json();
+    const oauthUser = jwt.decode(data.id_token);
+    const user = await User.findOneAndUpdate(
+      {
+        email: oauthUser.email.toLowerCase(),
+      },
+      {
+        $setOnInsert: {
+          firstName: oauthUser.given_name,
+          lastName: oauthUser.family_name,
+          email: oauthUser.email.toLowerCase(),
+          username: oauthUser.email.split("@")[0],
+          oauthProvider: "google",
+          oauthId: oauthUser.sub,
+          profilePicture: oauthUser.picture,
+          roles: ["user"],
+        },
+      },
+      {
+        new: true,
+        upsert: true,
+      }
+    );
+    if (!user) return res.status(401).json({ message: "Oauth Faield" });
+
+    const token = signToken(user);
+
+    return res.status(200).json({ message: "Login successful", token, user });
+  } catch (error) {
+    return res.status(500).json({ message: "Oauth Faield" });
+  }
 });
