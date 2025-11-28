@@ -13,6 +13,8 @@ import { authLimiter, limit } from "./config/rate-limiter.js";
 
 const app = express();
 const port = ENV.PORT;
+
+app.set("trust proxy", 1);
 // middleware
 app.use(limit);
 app.use(cors());
